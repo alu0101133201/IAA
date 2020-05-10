@@ -32,7 +32,6 @@ function extractVocabulary() {
       console.log("Vocabulario extraído")
     })
   })
-
 }
 
 extractVocabulary();
