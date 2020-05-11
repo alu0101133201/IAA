@@ -21,6 +21,7 @@ function extractVocabulary() {
     vocabularyArray = data.split(/[^A-Za-z]+/);
     vocabularyArray = vocabularyArray.map(v => v.toLocaleLowerCase())
     vocabularyArray = vocabularyArray.sort();
+    vocabularyArray.push("</s>");
     filteredVocabulary = new Set(vocabularyArray);
     filteredVocabulary.delete('cebo');
     filteredVocabulary.delete('nocebo');

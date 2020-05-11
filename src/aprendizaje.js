@@ -11,6 +11,16 @@ const readline = require('readline');
 const file = process.argv.slice(2)[0];
 let ceboCount = {};
 let noCeboCount = {};
+// Variable que almacenará en número total de cadenas del corpus cebo
+let corpusCeboCount = 0;
+// Variable que almacenará el número total de cadenas del corpus nocebo
+let corpusNoCeboCount = 0;
+// Variable que almacenará el número total de cadenas de ambos corpus
+let totalNumber = 0;
+// Variable que almacenará nuetro vocabulario
+let vocabularyArray;
+// Número de repeticiones para las palabras desconocidas
+const K = 3;
 
 var myInterface = readline.createInterface({
   input: fs.createReadStream(file)
@@ -20,8 +30,8 @@ var myInterface = readline.createInterface({
 
 function lenguageModel() {
   let data = fs.readFileSync('vocabulary.txt', 'utf-8')
-  let vocabularyArray;
   vocabularyArray = data.split(/\s/);
+  vocabularyArray.push('<UNK>')
 
   // Inicializamos los objetos contadores
   for (let i = 0; i < 4; i++)
@@ -35,16 +45,19 @@ function lenguageModel() {
 
   //Leo las líneas de forma asíncrona mientras voy contando las palabras
   myInterface.on('line', function (line) {
+    totalNumber++;
     let aux = line.split(/[^A-Za-z]+/);
     aux = aux.map(v => v.toLocaleLowerCase())
 
     for (let i = 0; i < aux.length; i++) {
       if (aux[aux.length - 1] === 'cebo') {
         if (ceboCount[aux[i]] !== undefined) {
+          corpusCeboCount++;
           ceboCount[aux[i]]++;
         }
       } else {
         if (noCeboCount[aux[i]] !== undefined)
+        corpusNoCeboCount++;
         noCeboCount[aux[i]]++;
       }
     }
@@ -53,15 +66,46 @@ function lenguageModel() {
 
 // Cuando todo se haya contado, escribo los contadores
 myInterface.on('close', function() { 
-  writeResults();
+  // No se lo resto porque el número de palabras cebo/nocebo son el número de finales
+  // de línea que existen en los corpus
+  // corpusCeboCount -= ceboCount["cebo"];
+  // corpusNoCeboCount -= noCeboCount["nocebo"]
+
+  // Contamos los finales de línea en sus respectivos contadores
+  ceboCount["</s>"] = ceboCount["cebo"];
+  noCeboCount["</s>"] = noCeboCount["nocebo"];
+
+  // Escribimos en los ficheros
+  writeAprendizaje();
+  writeAprendizajeLog();
 })
+
+function writeAprendizaje() {
+  let results = '';
+  results += `numtitulares: ${Math.log(ceboCount["cebo"] / totalNumber)} ${Math.log(noCeboCount["nocebo"] / totalNumber)}\n`;
+
+  for (element of Object.getOwnPropertyNames(ceboCount)) {
+    if (element !== 'cebo' && element !== 'noCebo') {
+      ceboProb = (ceboCount[element] + 1) / (corpusCeboCount + vocabularyArray.length);
+      noCeboProb = (noCeboCount[element] + 1) / (corpusNoCeboCount + vocabularyArray.length);
+      results += element + " " + Math.log(ceboProb) + " " + Math.log(noCeboProb) + "\n";
+    }
+  }
+
+  // Escribimos la información
+  fs.writeFile('aprendizajeLog.txt', results, (err) => {
+    if (err) throw err;
+    console.log("Modelo generado")
+  })
+}
   
-function writeResults() {
+function writeAprendizajeLog() {
   // Generamos la información a escribir
   let results = '';
   results += `numtitulares: ${ceboCount["cebo"]} ${noCeboCount["nocebo"]}\n`
   for (element of Object.getOwnPropertyNames(ceboCount)) {
-    results += element + " " + ceboCount[element] + " " + noCeboCount[element] + "\n";
+    if (element !== 'cebo' && element !== 'noCebo')
+      results += element + " " + ceboCount[element] + " " + noCeboCount[element] + "\n";
   }
 
   // Escribimos la información
