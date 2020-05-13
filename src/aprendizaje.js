@@ -19,8 +19,6 @@ let corpusNoCeboCount = 0;
 let totalNumber = 0;
 // Variable que almacenará nuetro vocabulario
 let vocabularyArray;
-// Número de repeticiones para las palabras desconocidas
-const K = 3;
 
 // Creamos la infterfaz para leer el fichero .csv
 var myInterface = readline.createInterface({
