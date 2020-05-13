@@ -22,12 +22,14 @@ let vocabularyArray;
 // Número de repeticiones para las palabras desconocidas
 const K = 3;
 
+// Creamos la infterfaz para leer el fichero .csv
 var myInterface = readline.createInterface({
   input: fs.createReadStream(file)
 });
 
 
-
+// Función principal que genera los modelos de lenguaje que necesitamos 
+// aprendizaje.txt y aprendizajeLog.txt
 function lenguageModel() {
   let data = fs.readFileSync('vocabulary.txt', 'utf-8')
   vocabularyArray = data.split(/\s/);
@@ -80,7 +82,9 @@ myInterface.on('close', function() {
   writeAprendizajeLog();
 })
 
-function writeAprendizaje() {
+// Función que escribe el fichero aprendizajeLog.txt que contiene las probabilidades
+// de las palabras de los corpus en el espacio logarítmico y con suavizado laplaciano
+function writeAprendizajeLog() {
   let results = '';
   results += `numtitulares: ${Math.log(ceboCount["cebo"] / totalNumber)} ${Math.log(noCeboCount["nocebo"] / totalNumber)}\n`;
 
@@ -99,7 +103,9 @@ function writeAprendizaje() {
   })
 }
   
-function writeAprendizajeLog() {
+// Función que escribe el fichero aprendizaje.txt que contiene los contadores de 
+// las palabras de los corpues.
+function writeAprendizaje() {
   // Generamos la información a escribir
   let results = '';
   results += `numtitulares: ${ceboCount["cebo"]} ${noCeboCount["nocebo"]}\n`
