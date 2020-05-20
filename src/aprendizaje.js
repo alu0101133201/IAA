@@ -31,7 +31,7 @@ var myInterface = readline.createInterface({
 function lenguageModel() {
   let data = fs.readFileSync('vocabulary.txt', 'utf-8')
   vocabularyArray = data.split(/\s/);
-  vocabularyArray.push('<UNK>')
+  vocabularyArray.push('< >')
 
   // Inicializamos los objetos contadores
   for (let i = 0; i < 4; i++)

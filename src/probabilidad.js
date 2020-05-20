@@ -30,6 +30,6 @@ function testProb() {
       matchCount++;
     }
   }
-  console.log("El porcentaje de acierto es de: ", (matchCount / totalCount) * 100, "%")
+  console.log("El porcentaje de acierto es de: ",( (matchCount / totalCount) * 100).toFixed(2), "%")
 }
 testProb()

@@ -53,7 +53,7 @@ function readCorpus() {
     if (ceboProbability > noCeboProbability)
       results += ' ; cebo\n'
     else 
-    results += ' ; nocebo\n'
+      results += ' ; nocebo\n'
   }
 
   fs.writeFile('results.csv', results, (err) => {
